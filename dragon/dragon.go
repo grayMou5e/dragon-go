@@ -1,7 +1,6 @@
 package dragon
 
 import (
-	"fmt"
 	"sort"
 )
 
@@ -35,8 +34,6 @@ func CreateDragon(knightAttack int8,
 
 	strongestStat := powers[0]
 	strongestStatDif := int(10 - strongestStat.Value)
-
-	fmt.Println(powers)
 
 	for i := 1; i <= strongestStatDif && i < powers.Len()-1; i++ {
 		powers[0].Value++
