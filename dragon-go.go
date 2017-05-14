@@ -3,29 +3,41 @@ package main
 import (
 	"fmt"
 
+	"github.com/grayMou5e/dragon-go/dragon"
 	"github.com/grayMou5e/dragon-go/game"
 	"github.com/grayMou5e/dragon-go/handlers"
+	"github.com/grayMou5e/dragon-go/weather"
 )
 
 func main() {
-	playGame()
-}
-
-func playGame() {
-	game := startGame()
-	fmt.Println(game.Knight)
-
-}
-
-func startGame() *game.Data {
 	handler := handlers.NewHandler()
+	var hndlr handlers.GameHandler
+	hndlr = handler
 
-	var t handlers.GameHandler
-	t = handler
+	playGame(hndlr)
+}
 
-	gameData := t.GetGame()
+func playGame(handler handlers.GameHandler) *game.Data {
 
-	t.GetWeather(gameData.GameID)
+	game := startGame(handler)
+	getWeather(handler, game)
+	addDragon(game)
+	fmt.Println(game)
+	return game
+}
 
-	return gameData
+func startGame(handler handlers.GameHandler) *game.Data {
+	gameData := *handler.GetGame()
+
+	return &gameData
+}
+
+func getWeather(handler handlers.GameHandler, gameData *game.Data) {
+	weatherData := handler.GetWeather(gameData.GameID)
+	weather.AddType(weatherData)
+	gameData.Weather = *weatherData
+}
+
+func addDragon(gameData *game.Data) {
+	gameData.Dragon = *dragon.CreateDragon(gameData.Knight.Attack, gameData.Knight.Armor, gameData.Knight.Agility, gameData.Knight.Endurance)
 }

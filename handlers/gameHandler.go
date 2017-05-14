@@ -40,12 +40,10 @@ func (GameHandler *GameHTTPHandler) GetGame() (gameData *game.Data) {
 }
 
 //GetWeather receives weather from api
-func (GameHandler *GameHTTPHandler) GetWeather(gameID int) (weatherData weather.Weather) {
+func (GameHandler *GameHTTPHandler) GetWeather(gameID int) (weatherData *weather.Weather) {
 	bodyBytes := getAPIBodyBytes(fmt.Sprintf("%sweather/api/report/%d", baseRestAPIURL, gameID), GameHandler)
-
 	xml.Unmarshal(*bodyBytes, &weatherData)
 
-	fmt.Println(weatherData)
 	return weatherData
 }
 

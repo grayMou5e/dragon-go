@@ -8,5 +8,5 @@ import (
 //GameHandler interface for game handlers
 type GameHandler interface {
 	GetGame() (gameData *game.Data)
-	GetWeather(gameID int) (weatherData weather.Weather)
+	GetWeather(gameID int) (weatherData *weather.Weather)
 }
