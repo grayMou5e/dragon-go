@@ -26,10 +26,10 @@ func CreateDragon(knightAttack int8,
 	knightAgility int8,
 	knightEndurance int8) *Dragon {
 	powers := pairList{
-		pair{"attack", knightAttack},
-		pair{"armor", knightArmor},
-		pair{"agility", knightAgility},
-		pair{"endurance", knightEndurance},
+		pair{powerAttack, knightAttack},
+		pair{powerArmor, knightArmor},
+		pair{powerAgility, knightAgility},
+		pair{powerEndurance, knightEndurance},
 	}
 	sort.Sort(sort.Reverse(powers))
 
@@ -46,10 +46,10 @@ func CreateDragon(knightAttack int8,
 	dragonPower := powers.ToMap()
 
 	return &Dragon{
-		ClawSharpness:  dragonPower["armor"],
-		ScaleThickness: dragonPower["attack"],
-		WingStrength:   dragonPower["agility"],
-		FireBreath:     dragonPower["endurance"],
+		ClawSharpness:  dragonPower[powerArmor],
+		ScaleThickness: dragonPower[powerAttack],
+		WingStrength:   dragonPower[powerAgility],
+		FireBreath:     dragonPower[powerEndurance],
 	}
 }
 
@@ -60,7 +60,13 @@ type pair struct {
 
 type pairList []pair
 
-func (p pairList) ToMap() (m map[string]int8) {
+func (p pairList) ToMap() map[string]int8 {
+	m := map[string]int8{
+		powerAttack:    0,
+		powerArmor:     0,
+		powerAgility:   0,
+		powerEndurance: 0,
+	}
 	for _, element := range p {
 		m[element.Key] = element.Value
 	}

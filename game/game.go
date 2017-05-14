@@ -13,7 +13,3 @@ type Data struct {
 	Dragon  dragon.Dragon
 	Weather weather.Weather
 }
-
-func Testing() {
-
-}
