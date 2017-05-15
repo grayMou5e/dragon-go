@@ -61,7 +61,6 @@ func (GameHandler *GameHTTPHandler) FightAgainstTheKnight(dragonData *dragon.Dat
 		b, err = json.Marshal(struct {
 			Dragon dragon.Data `json:"dragon"`
 		}{*dragonData})
-
 		if err != nil {
 			panic(err)
 		}
@@ -74,6 +73,7 @@ func (GameHandler *GameHTTPHandler) FightAgainstTheKnight(dragonData *dragon.Dat
 	req.Header.Set("Content-Type", "application/json")
 
 	resp, err3 := GameHandler.httpClient.Do(req)
+	req.Close = true
 	if err3 != nil {
 		panic(err2)
 	}
@@ -87,7 +87,6 @@ func (GameHandler *GameHTTPHandler) FightAgainstTheKnight(dragonData *dragon.Dat
 	if errr != nil {
 		panic(errr)
 	}
-
 	json.Unmarshal(bodyBytes, &result)
 
 	return result
@@ -95,7 +94,6 @@ func (GameHandler *GameHTTPHandler) FightAgainstTheKnight(dragonData *dragon.Dat
 
 func getAPIBodyBytes(url string, gameHandler *GameHTTPHandler) *[]byte {
 	resp, err := gameHandler.httpClient.Get(url)
-	// resp, err := http.Get(url)
 	if err != nil {
 		panic(err)
 	}
