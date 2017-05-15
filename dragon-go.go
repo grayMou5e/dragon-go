@@ -12,21 +12,45 @@ import (
 )
 
 func main() {
-	amountOfGames := 100
+	amountOfGames := 5000
+
+	jobs := make(chan int, amountOfGames)
+	results := make(chan *game.Data, amountOfGames)
+
 	handler := handlers.NewHandler()
 	var hndlr handlers.GameHandler
 	hndlr = handler
-	wins := 0
+
+	for w := 1; w <= 100; w++ {
+		go worker(&hndlr, jobs, results)
+	}
+
 	startTime := time.Now()
-	for i := 0; i < amountOfGames; i++ {
-		game := playGame(hndlr)
-		if game.Result.Victory {
+	for j := 1; j <= amountOfGames; j++ {
+		jobs <- j
+	}
+	close(jobs)
+
+	wins := 0
+	for a := 1; a <= amountOfGames; a++ {
+		data := <-results
+		if data.Result.Victory {
 			wins++
 		}
 	}
+	close(results)
 	elapsed := time.Since(startTime)
+
 	fmt.Println(fmt.Sprintf("Won - %d Lost - %d", wins, amountOfGames-wins))
 	fmt.Printf("Time elapsed %s", elapsed)
+}
+
+func worker(handler *handlers.GameHandler, jobs <-chan int, results chan<- *game.Data) {
+
+	for _ = range jobs {
+		game := playGame(*handler)
+		results <- game
+	}
 }
 
 func playGame(handler handlers.GameHandler) *game.Data {
@@ -38,8 +62,6 @@ func playGame(handler handlers.GameHandler) *game.Data {
 	result := handler.FightAgainstTheKnight(&game.Dragon, game.GameID)
 	game.Result = *result
 	game.Result.Summarize()
-
-	// fmt.Println(result)
 
 	return game
 }
