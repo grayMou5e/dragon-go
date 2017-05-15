@@ -3,6 +3,7 @@ package game
 import (
 	"github.com/grayMou5e/dragon-go/dragon"
 	"github.com/grayMou5e/dragon-go/knight"
+	"github.com/grayMou5e/dragon-go/result"
 	"github.com/grayMou5e/dragon-go/weather"
 )
 
@@ -12,4 +13,5 @@ type Data struct {
 	Knight  knight.Knight `json:"knight"`
 	Dragon  dragon.Dragon
 	Weather weather.Weather
+	Result  result.Data
 }

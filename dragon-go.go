@@ -3,6 +3,8 @@ package main
 import (
 	"fmt"
 
+	"time"
+
 	"github.com/grayMou5e/dragon-go/dragon"
 	"github.com/grayMou5e/dragon-go/game"
 	"github.com/grayMou5e/dragon-go/handlers"
@@ -10,11 +12,21 @@ import (
 )
 
 func main() {
+	amountOfGames := 100
 	handler := handlers.NewHandler()
 	var hndlr handlers.GameHandler
 	hndlr = handler
-
-	playGame(hndlr)
+	wins := 0
+	startTime := time.Now()
+	for i := 0; i < amountOfGames; i++ {
+		game := playGame(hndlr)
+		if game.Result.Victory {
+			wins++
+		}
+	}
+	elapsed := time.Since(startTime)
+	fmt.Println(fmt.Sprintf("Won - %d Lost - %d", wins, amountOfGames-wins))
+	fmt.Printf("Time elapsed %s", elapsed)
 }
 
 func playGame(handler handlers.GameHandler) *game.Data {
@@ -22,7 +34,13 @@ func playGame(handler handlers.GameHandler) *game.Data {
 	game := startGame(handler)
 	getWeather(handler, game)
 	addDragon(game)
-	fmt.Println(game)
+
+	result := handler.FightAgainstTheKnight(&game.Dragon, game.GameID)
+	game.Result = *result
+	game.Result.Summarize()
+
+	// fmt.Println(result)
+
 	return game
 }
 
@@ -39,5 +57,9 @@ func getWeather(handler handlers.GameHandler, gameData *game.Data) {
 }
 
 func addDragon(gameData *game.Data) {
-	gameData.Dragon = *dragon.CreateDragon(gameData.Knight.Attack, gameData.Knight.Armor, gameData.Knight.Agility, gameData.Knight.Endurance)
+	gameData.Dragon = *dragon.CreateDragon(gameData.Knight.Attack,
+		gameData.Knight.Armor,
+		gameData.Knight.Agility,
+		gameData.Knight.Endurance,
+		gameData.Weather.Type)
 }

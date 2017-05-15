@@ -10,7 +10,11 @@ import (
 
 	"fmt"
 
+	"bytes"
+
+	"github.com/grayMou5e/dragon-go/dragon"
 	"github.com/grayMou5e/dragon-go/game"
+	"github.com/grayMou5e/dragon-go/result"
 	"github.com/grayMou5e/dragon-go/weather"
 )
 
@@ -45,6 +49,49 @@ func (GameHandler *GameHTTPHandler) GetWeather(gameID int) (weatherData *weather
 	xml.Unmarshal(*bodyBytes, &weatherData)
 
 	return weatherData
+}
+
+//FightAgainstTheKnight Method for starting fight against the knight
+func (GameHandler *GameHTTPHandler) FightAgainstTheKnight(dragonData *dragon.Dragon, gameID int) (result *result.Data) {
+	var b []byte
+	if dragonData.Scared {
+		b = []byte("{\"dragon\":null}")
+		fmt.Println("storm!!!")
+	} else {
+		var err error
+		b, err = json.Marshal(struct {
+			Dragon dragon.Dragon `json:"dragon"`
+		}{*dragonData})
+
+		if err != nil {
+			panic(err)
+		}
+	}
+
+	req, err2 := http.NewRequest("PUT", fmt.Sprintf("%sapi/game/%d/solution", baseRestAPIURL, gameID), bytes.NewBuffer(b))
+	if err2 != nil {
+		panic(err2)
+	}
+	req.Header.Set("Content-Type", "application/json")
+
+	resp, err3 := GameHandler.httpClient.Do(req)
+	if err3 != nil {
+		panic(err2)
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != 200 {
+		//do something
+	}
+
+	bodyBytes, errr := ioutil.ReadAll(resp.Body)
+	if errr != nil {
+		panic(errr)
+	}
+
+	json.Unmarshal(bodyBytes, &result)
+
+	return result
 }
 
 func getAPIBodyBytes(url string, gameHandler *GameHTTPHandler) *[]byte {

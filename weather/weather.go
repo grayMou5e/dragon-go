@@ -3,25 +3,25 @@ package weather
 import "strings"
 
 //Type for assinging type for current weather object
-type weatherType uint8
+type Type uint8
 
 const (
 	//NormalWeather indicates normal weather
-	NormalWeather weatherType = 1 << iota
+	NormalWeather Type = 1 << iota
 	//DryWeather indicates that it's dry
-	DryWeather weatherType = 1 << iota
+	DryWeather Type = 1 << iota
 	//FogWeather indicates that there is fog
-	FogWeather weatherType = 1 << iota
+	FogWeather Type = 1 << iota
 	//StormWeather indicates that there is stroms
-	StormWeather weatherType = 1 << iota
+	StormWeather Type = 1 << iota
 	//RainWeather indicates taht there is raining
-	RainWeather weatherType = 1 << iota
+	RainWeather Type = 1 << iota
 )
 
 //Weather struct is dedicated for holding up the data for weather
 type Weather struct {
 	Message string `xml:"message"`
-	Type    weatherType
+	Type    Type
 }
 
 //AddType adds weather type to existing object
