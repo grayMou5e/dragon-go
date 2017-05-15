@@ -12,7 +12,7 @@ import (
 )
 
 func main() {
-	amountOfGames := 10000
+	amountOfGames := 5000
 
 	jobs := make(chan int, amountOfGames)
 	results := make(chan *game.Data, amountOfGames)
@@ -30,6 +30,7 @@ func main() {
 		jobs <- j
 	}
 	close(jobs)
+
 	wins := 0
 	for a := 1; a <= amountOfGames; a++ {
 		data := <-results
@@ -37,6 +38,7 @@ func main() {
 			wins++
 		}
 	}
+	close(results)
 	elapsed := time.Since(startTime)
 
 	fmt.Println(fmt.Sprintf("Won - %d Lost - %d", wins, amountOfGames-wins))
@@ -60,8 +62,6 @@ func playGame(handler handlers.GameHandler) *game.Data {
 	result := handler.FightAgainstTheKnight(&game.Dragon, game.GameID)
 	game.Result = *result
 	game.Result.Summarize()
-
-	// fmt.Println(result)
 
 	return game
 }
