@@ -18,14 +18,14 @@ const (
 	RainWeather Type = 1 << iota
 )
 
-//Weather struct is dedicated for holding up the data for weather
-type Weather struct {
+//Data struct is dedicated for holding up the data for weather
+type Data struct {
 	Message string `xml:"message"`
 	Type    Type
 }
 
 //AddType adds weather type to existing object
-func AddType(weather *Weather) {
+func AddType(weather *Data) {
 	toCompare := strings.ToLower(weather.Message)
 	if strings.Contains(toCompare, "regular normal weather") {
 		weather.Type = NormalWeather

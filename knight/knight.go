@@ -1,7 +1,7 @@
 package knight
 
-//Knight struct for storing information about knight
-type Knight struct {
+//Data struct for storing information about knight
+type Data struct {
 	// Name      string `json:"name"`
 	Attack    int8 `json:"attack"`
 	Armor     int8 `json:"armor"`

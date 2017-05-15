@@ -6,8 +6,8 @@ import (
 	"github.com/grayMou5e/dragon-go/weather"
 )
 
-//Dragon model struct for storing dragon information
-type Dragon struct {
+//Data model struct for storing dragon information
+type Data struct {
 	ScaleThickness int8 `json:"scaleThickness"`
 	ClawSharpness  int8 `json:"clawSharpness"`
 	WingStrength   int8 `json:"wingStrength"`
@@ -28,16 +28,16 @@ func CreateDragon(knightAttack int8,
 	knightArmor int8,
 	knightAgility int8,
 	knightEndurance int8,
-	weatherType weather.Type) *Dragon {
+	weatherType weather.Type) *Data {
 	switch weatherType {
 	case weather.DryWeather:
-		return &Dragon{ClawSharpness: 5, FireBreath: 5, ScaleThickness: 5, WingStrength: 5, Scared: false}
+		return &Data{ClawSharpness: 5, FireBreath: 5, ScaleThickness: 5, WingStrength: 5, Scared: false}
 	case weather.StormWeather:
-		return &Dragon{ClawSharpness: 0, FireBreath: 0, ScaleThickness: 0, WingStrength: 0, Scared: true}
+		return &Data{ClawSharpness: 0, FireBreath: 0, ScaleThickness: 0, WingStrength: 0, Scared: true}
 	case weather.RainWeather:
-		return &Dragon{ClawSharpness: 10, WingStrength: 5, ScaleThickness: 5, FireBreath: 0, Scared: false}
+		return &Data{ClawSharpness: 10, WingStrength: 5, ScaleThickness: 5, FireBreath: 0, Scared: false}
 	case weather.FogWeather:
-		return &Dragon{ClawSharpness: 10, WingStrength: 1, ScaleThickness: 5, FireBreath: 4, Scared: false}
+		return &Data{ClawSharpness: 10, WingStrength: 1, ScaleThickness: 5, FireBreath: 4, Scared: false}
 	default:
 		return getNormalsDragon(knightAttack, knightArmor, knightAgility, knightEndurance)
 	}
@@ -46,7 +46,7 @@ func CreateDragon(knightAttack int8,
 func getNormalsDragon(knightAttack int8,
 	knightArmor int8,
 	knightAgility int8,
-	knightEndurance int8) *Dragon {
+	knightEndurance int8) *Data {
 	powers := pairList{
 		pair{powerAttack, knightAttack},
 		pair{powerArmor, knightArmor},
@@ -65,7 +65,7 @@ func getNormalsDragon(knightAttack int8,
 
 	dragonPower := powers.ToMap()
 
-	return &Dragon{
+	return &Data{
 		ClawSharpness:  dragonPower[powerArmor],
 		ScaleThickness: dragonPower[powerAttack],
 		WingStrength:   dragonPower[powerAgility],

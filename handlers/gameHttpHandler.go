@@ -25,13 +25,13 @@ func NewHandler() *GameHTTPHandler {
 	httpClient := http.Client{}
 
 	return &GameHTTPHandler{
-		httpClient: httpClient,
+		httpClient: &httpClient,
 	}
 }
 
 //GameHTTPHandler handles game http requests
 type GameHTTPHandler struct {
-	httpClient http.Client
+	httpClient *http.Client
 }
 
 //GetGame method for receiving game data
@@ -44,7 +44,7 @@ func (GameHandler *GameHTTPHandler) GetGame() (gameData *game.Data) {
 }
 
 //GetWeather receives weather from api
-func (GameHandler *GameHTTPHandler) GetWeather(gameID int) (weatherData *weather.Weather) {
+func (GameHandler *GameHTTPHandler) GetWeather(gameID int) (weatherData *weather.Data) {
 	bodyBytes := getAPIBodyBytes(fmt.Sprintf("%sweather/api/report/%d", baseRestAPIURL, gameID), GameHandler)
 	xml.Unmarshal(*bodyBytes, &weatherData)
 
@@ -52,15 +52,14 @@ func (GameHandler *GameHTTPHandler) GetWeather(gameID int) (weatherData *weather
 }
 
 //FightAgainstTheKnight Method for starting fight against the knight
-func (GameHandler *GameHTTPHandler) FightAgainstTheKnight(dragonData *dragon.Dragon, gameID int) (result *result.Data) {
+func (GameHandler *GameHTTPHandler) FightAgainstTheKnight(dragonData *dragon.Data, gameID int) (result *result.Data) {
 	var b []byte
 	if dragonData.Scared {
 		b = []byte("{\"dragon\":null}")
-		fmt.Println("storm!!!")
 	} else {
 		var err error
 		b, err = json.Marshal(struct {
-			Dragon dragon.Dragon `json:"dragon"`
+			Dragon dragon.Data `json:"dragon"`
 		}{*dragonData})
 
 		if err != nil {
@@ -96,6 +95,7 @@ func (GameHandler *GameHTTPHandler) FightAgainstTheKnight(dragonData *dragon.Dra
 
 func getAPIBodyBytes(url string, gameHandler *GameHTTPHandler) *[]byte {
 	resp, err := gameHandler.httpClient.Get(url)
+	// resp, err := http.Get(url)
 	if err != nil {
 		panic(err)
 	}
