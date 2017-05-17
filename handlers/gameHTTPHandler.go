@@ -25,13 +25,13 @@ func NewHandler() *GameHTTPHandler {
 	httpClient := http.Client{}
 
 	return &GameHTTPHandler{
-		httpClient: &httpClient,
+		httpClient: httpClient,
 	}
 }
 
 //GameHTTPHandler handles game http requests
 type GameHTTPHandler struct {
-	httpClient *http.Client
+	httpClient http.Client
 }
 
 //GetGame method for receiving game data
