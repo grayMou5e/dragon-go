@@ -12,7 +12,7 @@ import (
 )
 
 func main() {
-	amountOfGames := 5000
+	amountOfGames := 1000
 
 	jobs := make(chan int, amountOfGames)
 	results := make(chan *game.Data, amountOfGames)

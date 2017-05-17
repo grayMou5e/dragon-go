@@ -3,18 +3,9 @@ package dragon
 import (
 	"sort"
 
+	"github.com/grayMou5e/dragon-go/utilities"
 	"github.com/grayMou5e/dragon-go/weather"
 )
-
-//Data model struct for storing dragon information
-type Data struct {
-	ScaleThickness int8 `json:"scaleThickness"`
-	ClawSharpness  int8 `json:"clawSharpness"`
-	WingStrength   int8 `json:"wingStrength"`
-	FireBreath     int8 `json:"fireBreath"`
-	//Scared indicates if dragon can go to fight or not
-	Scared bool
-}
 
 const (
 	powerAttack    = "attack"
@@ -23,7 +14,7 @@ const (
 	powerEndurance = "endurance"
 )
 
-//CreateDragon function for creating dragon based on knight stats
+//CreateDragon function for creating dragon based on knight stats & weather type
 func CreateDragon(knightAttack int8,
 	knightArmor int8,
 	knightAgility int8,
@@ -39,19 +30,19 @@ func CreateDragon(knightAttack int8,
 	case weather.FogWeather:
 		return &Data{ClawSharpness: 10, WingStrength: 1, ScaleThickness: 5, FireBreath: 4, Scared: false}
 	default:
-		return getNormalsDragon(knightAttack, knightArmor, knightAgility, knightEndurance)
+		return getNormalDragon(knightAttack, knightArmor, knightAgility, knightEndurance)
 	}
 }
 
-func getNormalsDragon(knightAttack int8,
+func getNormalDragon(knightAttack int8,
 	knightArmor int8,
 	knightAgility int8,
 	knightEndurance int8) *Data {
-	powers := pairList{
-		pair{powerAttack, knightAttack},
-		pair{powerArmor, knightArmor},
-		pair{powerAgility, knightAgility},
-		pair{powerEndurance, knightEndurance},
+	powers := utilities.PairList{
+		utilities.Pair{Key: powerAttack, Value: knightAttack},
+		utilities.Pair{Key: powerArmor, Value: knightArmor},
+		utilities.Pair{Key: powerAgility, Value: knightAgility},
+		utilities.Pair{Key: powerEndurance, Value: knightEndurance},
 	}
 	sort.Sort(sort.Reverse(powers))
 
@@ -73,26 +64,3 @@ func getNormalsDragon(knightAttack int8,
 		Scared:         false,
 	}
 }
-
-type pair struct {
-	Key   string
-	Value int8
-}
-
-type pairList []pair
-
-func (p pairList) ToMap() map[string]int8 {
-	m := map[string]int8{
-		powerAttack:    0,
-		powerArmor:     0,
-		powerAgility:   0,
-		powerEndurance: 0,
-	}
-	for _, element := range p {
-		m[element.Key] = element.Value
-	}
-	return m
-}
-func (p pairList) Len() int           { return len(p) }
-func (p pairList) Less(i, j int) bool { return p[i].Value < p[j].Value }
-func (p pairList) Swap(i, j int)      { p[i], p[j] = p[j], p[i] }
