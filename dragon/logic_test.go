@@ -4,9 +4,11 @@ import (
 	"testing"
 
 	"github.com/grayMou5e/dragon-go/weather"
+	"github.com/stretchr/testify/assert"
 )
 
 func Test_CreateDragon(t *testing.T) {
+	assert := assert.New(t)
 	testingData := []struct {
 		atack          int8
 		armor          int8
@@ -25,25 +27,16 @@ func Test_CreateDragon(t *testing.T) {
 	for _, data := range testingData {
 		resultDragon := CreateDragon(data.atack, data.armor, data.agility, data.endurance, data.weather)
 
-		if resultDragon.ClawSharpness != data.expectedDragon.ClawSharpness {
-			t.Errorf("Expected Claw Sharpness of %d but received %d", data.expectedDragon.ClawSharpness, resultDragon.ClawSharpness)
-		}
-		if resultDragon.ScaleThickness != data.expectedDragon.ScaleThickness {
-			t.Errorf("Expected Scale Thickness of %d but received %d", data.expectedDragon.ScaleThickness, resultDragon.ScaleThickness)
-		}
-		if resultDragon.FireBreath != data.expectedDragon.FireBreath {
-			t.Errorf("Expected Fire Breath of %d but received %d", data.expectedDragon.FireBreath, resultDragon.FireBreath)
-		}
-		if resultDragon.WingStrength != data.expectedDragon.WingStrength {
-			t.Errorf("Expected Wing Strength of %d but received %d", data.expectedDragon.WingStrength, resultDragon.WingStrength)
-		}
-		if resultDragon.Scared != data.expectedDragon.Scared {
-			t.Errorf("Expected Scared value of %t but received %t", data.expectedDragon.Scared, resultDragon.Scared)
-		}
+		assert.Equal(data.expectedDragon.ClawSharpness, resultDragon.ClawSharpness)
+		assert.Equal(data.expectedDragon.ScaleThickness, resultDragon.ScaleThickness)
+		assert.Equal(data.expectedDragon.FireBreath, resultDragon.FireBreath)
+		assert.Equal(data.expectedDragon.WingStrength, resultDragon.WingStrength)
+		assert.Equal(data.expectedDragon.Scared, resultDragon.Scared)
 	}
 }
 
 func Test_GetNormalDragon(t *testing.T) {
+	assert := assert.New(t)
 	testingData := []struct {
 		atack          int8
 		armor          int8
@@ -59,17 +52,10 @@ func Test_GetNormalDragon(t *testing.T) {
 	for _, data := range testingData {
 		resultDragon := getNormalDragon(data.atack, data.armor, data.agility, data.endurance)
 
-		if resultDragon.ClawSharpness != data.expectedDragon.ClawSharpness {
-			t.Errorf("Expected Claw Sharpness of %d but received %d", data.expectedDragon.ClawSharpness, resultDragon.ClawSharpness)
-		}
-		if resultDragon.ScaleThickness != data.expectedDragon.ScaleThickness {
-			t.Errorf("Expected Scale Thickness of %d but received %d", data.expectedDragon.ScaleThickness, resultDragon.ScaleThickness)
-		}
-		if resultDragon.FireBreath != data.expectedDragon.FireBreath {
-			t.Errorf("Expected Fire Breath of %d but received %d", data.expectedDragon.FireBreath, resultDragon.FireBreath)
-		}
-		if resultDragon.WingStrength != data.expectedDragon.WingStrength {
-			t.Errorf("Expected Wing Strength of %d but received %d", data.expectedDragon.WingStrength, resultDragon.WingStrength)
-		}
+		assert.Equal(data.expectedDragon.ClawSharpness, resultDragon.ClawSharpness)
+		assert.Equal(data.expectedDragon.ScaleThickness, resultDragon.ScaleThickness)
+		assert.Equal(data.expectedDragon.FireBreath, resultDragon.FireBreath)
+		assert.Equal(data.expectedDragon.WingStrength, resultDragon.WingStrength)
+		assert.Equal(data.expectedDragon.Scared, resultDragon.Scared)
 	}
 }

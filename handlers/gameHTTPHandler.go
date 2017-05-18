@@ -18,41 +18,42 @@ import (
 	"github.com/grayMou5e/dragon-go/weather"
 )
 
-const baseRestAPIURL = "http://www.dragonsofmugloar.com/"
-
 //NewHandler creates new Game Handler
 func NewHandler() *GameHTTPHandler {
 	httpClient := http.Client{}
 
 	return &GameHTTPHandler{
-		httpClient: httpClient,
+		httpClient:     httpClient,
+		baseRestAPIURL: "http://www.dragonsofmugloar.com",
 	}
 }
 
 //GameHTTPHandler handles game http requests
 type GameHTTPHandler struct {
-	httpClient http.Client
+	httpClient     http.Client
+	baseRestAPIURL string
 }
 
 //GetGame method for receiving game data
-func (GameHandler *GameHTTPHandler) GetGame() (gameData *game.Data) {
-	bodyBytes := getAPIBodyBytes(baseRestAPIURL+"api/game", GameHandler)
+func (h *GameHTTPHandler) GetGame() (gameData *game.Data) {
+	bodyBytes := getAPIBodyBytes(h.baseRestAPIURL+"/api/game", h)
 
-	json.Unmarshal(*bodyBytes, &gameData)
+	json.Unmarshal(bodyBytes, &gameData)
 
 	return gameData
 }
 
 //GetWeather receives weather from api
-func (GameHandler *GameHTTPHandler) GetWeather(gameID int) (weatherData *weather.Data) {
-	bodyBytes := getAPIBodyBytes(fmt.Sprintf("%sweather/api/report/%d", baseRestAPIURL, gameID), GameHandler)
-	xml.Unmarshal(*bodyBytes, &weatherData)
+func (h *GameHTTPHandler) GetWeather(gameID int) (weatherData *weather.Data) {
+	bodyBytes := getAPIBodyBytes(fmt.Sprintf("%s/weather/api/report/%d", h.baseRestAPIURL, gameID), h)
+
+	xml.Unmarshal(bodyBytes, &weatherData)
 
 	return weatherData
 }
 
 //FightAgainstTheKnight Method for starting fight against the knight
-func (GameHandler *GameHTTPHandler) FightAgainstTheKnight(dragonData *dragon.Data, gameID int) (result *result.Data) {
+func (h *GameHTTPHandler) FightAgainstTheKnight(dragonData *dragon.Data, gameID int) (result *result.Data) {
 	var b []byte
 	if dragonData.Scared {
 		b = []byte("{\"dragon\":null}")
@@ -66,13 +67,13 @@ func (GameHandler *GameHTTPHandler) FightAgainstTheKnight(dragonData *dragon.Dat
 		}
 	}
 
-	req, err2 := http.NewRequest("PUT", fmt.Sprintf("%sapi/game/%d/solution", baseRestAPIURL, gameID), bytes.NewBuffer(b))
+	req, err2 := http.NewRequest("PUT", fmt.Sprintf("%s/api/game/%d/solution", h.baseRestAPIURL, gameID), bytes.NewBuffer(b))
 	if err2 != nil {
 		panic(err2)
 	}
 	req.Header.Set("Content-Type", "application/json")
 
-	resp, err3 := GameHandler.httpClient.Do(req)
+	resp, err3 := h.httpClient.Do(req)
 	req.Close = true
 	if err3 != nil {
 		panic(err2)
@@ -92,7 +93,7 @@ func (GameHandler *GameHTTPHandler) FightAgainstTheKnight(dragonData *dragon.Dat
 	return result
 }
 
-func getAPIBodyBytes(url string, gameHandler *GameHTTPHandler) *[]byte {
+func getAPIBodyBytes(url string, gameHandler *GameHTTPHandler) []byte {
 	resp, err := gameHandler.httpClient.Get(url)
 	if err != nil {
 		panic(err)
@@ -108,5 +109,5 @@ func getAPIBodyBytes(url string, gameHandler *GameHTTPHandler) *[]byte {
 		panic(err2)
 	}
 
-	return &bodyBytes
+	return bodyBytes
 }

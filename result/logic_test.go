@@ -2,9 +2,12 @@ package result
 
 import (
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func TestSummarize(t *testing.T) {
+	assert := assert.New(t)
 	testData := []struct {
 		data   Data
 		result bool
@@ -15,9 +18,7 @@ func TestSummarize(t *testing.T) {
 	}
 	for _, data := range testData {
 		data.data.Summarize()
-		if data.data.Victory != data.result {
-			t.Errorf("Received [%s] and expected result %t but received %t", data.data.Status, data.result, false)
-		}
+		assert.Equal(data.result, data.data.Victory)
 	}
 
 }
