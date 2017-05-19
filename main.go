@@ -1,16 +1,20 @@
 package main
 
 import (
+	"bufio"
 	"fmt"
+	"os"
 
 	"time"
+
+	"strconv"
 
 	"github.com/grayMou5e/dragon-go/game"
 	"github.com/grayMou5e/dragon-go/handlers"
 )
 
 func main() {
-	amountOfGames := 100
+	amountOfGames := getAmountOfGames()
 
 	jobs := make(chan int, amountOfGames)
 	results := make(chan *game.Data, amountOfGames)
@@ -31,6 +35,24 @@ func main() {
 
 	fmt.Println(fmt.Sprintf("Won - %d Lost - %d", wins, amountOfGames-wins))
 	fmt.Printf("Time elapsed %s", elapsed)
+}
+
+func getAmountOfGames() (amountOfGames int) {
+	enterMessage := "Enter amount of games: "
+	scanner := bufio.NewScanner(os.Stdin)
+	fmt.Println(enterMessage)
+	for scanner.Scan() {
+		var inputError error
+		amountOfGames, inputError = strconv.Atoi(scanner.Text())
+
+		if inputError == nil {
+			break
+		}
+
+		fmt.Println(enterMessage)
+	}
+
+	return amountOfGames
 }
 
 func processPlayedGames(quantity int, results <-chan *game.Data) (gamesWon int) {
