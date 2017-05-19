@@ -53,18 +53,10 @@ func (h *GameHTTPHandler) GetWeather(gameID int) (weatherData *weather.Data) {
 }
 
 //FightAgainstTheKnight Method for starting fight against the knight
-func (h *GameHTTPHandler) FightAgainstTheKnight(dragonData *dragon.Data, gameID int) (result *result.Data) {
-	var b []byte
-	if dragonData.Scared {
-		b = []byte("{\"dragon\":null}")
-	} else {
-		var err error
-		b, err = json.Marshal(struct {
-			Dragon dragon.Data `json:"dragon"`
-		}{*dragonData})
-		if err != nil {
-			panic(err)
-		}
+func (h *GameHTTPHandler) FightAgainstTheKnight(dragonData *dragon.Data, gameID int) (resultData *result.Data) {
+	b, preparationErr := prepareDragonForSending(*dragonData)
+	if preparationErr != nil {
+		panic(preparationErr)
 	}
 
 	req, err2 := http.NewRequest("PUT", fmt.Sprintf("%s/api/game/%d/solution", h.baseRestAPIURL, gameID), bytes.NewBuffer(b))
@@ -80,17 +72,33 @@ func (h *GameHTTPHandler) FightAgainstTheKnight(dragonData *dragon.Data, gameID 
 	}
 	defer resp.Body.Close()
 
-	if resp.StatusCode != 200 {
-		//do something
+	if resp.StatusCode != http.StatusOK {
+		panic(fmt.Sprintf("Server is giving - %d", resp.StatusCode))
 	}
 
 	bodyBytes, errr := ioutil.ReadAll(resp.Body)
 	if errr != nil {
 		panic(errr)
 	}
-	json.Unmarshal(bodyBytes, &result)
+	json.Unmarshal(bodyBytes, &resultData)
 
-	return result
+	return resultData
+}
+
+func prepareDragonForSending(dragonData dragon.Data) (b []byte, err error) {
+	if dragonData.Scared {
+		return []byte("{\"dragon\":null}"), nil
+	}
+
+	b, err = json.Marshal(struct {
+		Dragon dragon.Data `json:"dragon"`
+	}{dragonData})
+
+	if err != nil {
+		return nil, err
+	}
+
+	return b, err
 }
 
 func getAPIBodyBytes(url string, gameHandler *GameHTTPHandler) []byte {

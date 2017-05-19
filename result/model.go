@@ -4,5 +4,5 @@ package result
 type Data struct {
 	Status  string `json:"status"`
 	Message string `json:"message"`
-	Victory bool
+	Victory bool   `json:"-"`
 }

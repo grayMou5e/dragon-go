@@ -6,18 +6,19 @@ type Type uint8
 //Data struct is dedicated for holding up the data for weather
 type Data struct {
 	Message string `xml:"message"`
-	Type    Type
+	Code    string `xml:"code"`
+	Type    Type   `xml:"-"`
 }
 
 const (
 	//NormalWeather indicates normal weather
-	NormalWeather Type = 1 << iota
+	NormalWeather Type = iota
 	//DryWeather indicates that it's dry
-	DryWeather Type = 1 << iota
+	DryWeather Type = iota
 	//FogWeather indicates that there is fog
-	FogWeather Type = 1 << iota
+	FogWeather Type = iota
 	//StormWeather indicates that there is stroms
-	StormWeather Type = 1 << iota
+	StormWeather Type = iota
 	//RainWeather indicates taht there is raining
-	RainWeather Type = 1 << iota
+	RainWeather Type = iota
 )

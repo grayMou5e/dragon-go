@@ -9,6 +9,7 @@ import (
 
 	"encoding/json"
 
+	"github.com/grayMou5e/dragon-go/dragon"
 	"github.com/grayMou5e/dragon-go/game"
 	"github.com/grayMou5e/dragon-go/knight"
 	"github.com/stretchr/testify/assert"
@@ -50,4 +51,83 @@ func Test_GetGame(t *testing.T) {
 
 	assert.Equal(expectedGame.GameID, game.GameID)
 	assert.Equal(expectedGame.Knight, game.Knight)
+}
+
+func Test_GetWeather(t *testing.T) {
+	assert := assert.New(t)
+	gameID := 1
+	code := "NMR"
+	message := "Another day of everyday normal regular weather, business as usual, unless it’s going to be like the time of the Great Paprika Mayonnaise Incident of 2014, that was some pretty nasty stuff."
+	xml := fmt.Sprintf("<?xml version=\"1.0\" encoding=\"UTF-8\"?><report><code>%s</code><message>%s</message></report>", code, message)
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.RequestURI == fmt.Sprintf("/weather/api/report/%d", gameID) {
+			w.Write([]byte(xml))
+		}
+	}))
+	defer server.Close()
+
+	handler := NewHandler()
+	handler.baseRestAPIURL = server.URL
+
+	weather := handler.GetWeather(gameID)
+
+	assert.Equal(message, weather.Message)
+}
+
+func Test_PrepareDragonForSending(t *testing.T) {
+	assert := assert.New(t)
+	dragonData := []struct {
+		data           dragon.Data
+		expectedResult []byte
+	}{
+		{dragon.Data{Scared: true}, []byte("{\"dragon\":null}")},
+		{dragon.Data{ClawSharpness: 1, FireBreath: 1, ScaleThickness: 1, WingStrength: 1},
+			[]byte("{\"dragon\":{\"scaleThickness\":1,\"clawSharpness\":1,\"wingStrength\":1,\"fireBreath\":1}}")}}
+
+	for _, data := range dragonData {
+		body, _ := prepareDragonForSending(data.data)
+
+		assert.Equal(string(data.expectedResult), string(body))
+	}
+}
+
+func Test_FightAgainstTheKnight(t *testing.T) {
+	assert := assert.New(t)
+	dragonData := dragon.Data{ClawSharpness: 1}
+	gameID := 1
+	status := "Defeat"
+	message := "Sorry mate you lost"
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.RequestURI == fmt.Sprintf("/api/game/%d/solution", gameID) && r.Method == "PUT" {
+			w.Write([]byte(fmt.Sprintf("{\"status\":\"%s\",\"message\":\"%s\"}", status, message)))
+		}
+	}))
+	defer server.Close()
+
+	handler := NewHandler()
+	handler.baseRestAPIURL = server.URL
+
+	rez := handler.FightAgainstTheKnight(&dragonData, gameID)
+
+	assert.Equal(status, rez.Status)
+	assert.Equal(message, rez.Message)
+}
+
+func Test_FightAgainstTheKnight_Return500(t *testing.T) {
+	assert := assert.New(t)
+	dragonData := dragon.Data{ClawSharpness: 1}
+	gameID := 1
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.RequestURI == fmt.Sprintf("/api/game/%d/solution", gameID) && r.Method == "PUT" {
+			w.WriteHeader(http.StatusInternalServerError)
+		}
+	}))
+	defer server.Close()
+
+	handler := NewHandler()
+	handler.baseRestAPIURL = server.URL
+
+	// rez := handler.FightAgainstTheKnight(&dragonData, gameID)
+
+	assert.Panics(func() { handler.FightAgainstTheKnight(&dragonData, gameID) }, "")
 }

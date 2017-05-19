@@ -1,19 +1,21 @@
 package weather
 
-import "strings"
+import (
+	"strings"
+)
 
 //AddType adds weather type to existing object
-func AddType(weather *Data) {
-	toCompare := strings.ToLower(weather.Message)
-	if strings.Contains(toCompare, "regular normal weather") {
+func (weather *Data) AddType() {
+	toCompare := strings.ToLower(weather.Code)
+	if toCompare == "nmr" {
 		weather.Type = NormalWeather
-	} else if strings.Contains(toCompare, "frog rain") {
+	} else if toCompare == "sro" {
 		weather.Type = StormWeather
-	} else if strings.Contains(toCompare, "flood") {
+	} else if toCompare == "hva" {
 		weather.Type = RainWeather
-	} else if strings.Contains(toCompare, "long dry") {
+	} else if toCompare == "t e" {
 		weather.Type = DryWeather
-	} else if strings.Contains(toCompare, "fog") {
+	} else if toCompare == "fundefinedg" {
 		weather.Type = FogWeather
 	}
 }

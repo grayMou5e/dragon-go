@@ -9,9 +9,9 @@ import (
 
 //Data struct is dedicated for holding up the information about current game
 type Data struct {
-	GameID  int         `json:"gameId"`
-	Knight  knight.Data `json:"knight"`
-	Dragon  dragon.Data
-	Weather weather.Data
-	Result  result.Data
+	GameID  int          `json:"gameId"`
+	Knight  knight.Data  `json:"knight"`
+	Dragon  dragon.Data  `json:"-"`
+	Weather weather.Data `json:"-"`
+	Result  result.Data  `json:"-"`
 }

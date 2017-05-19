@@ -11,5 +11,5 @@ import (
 type GameHandler interface {
 	GetGame() (gameData *game.Data)
 	GetWeather(gameID int) (weatherData *weather.Data)
-	FightAgainstTheKnight(dragonData *dragon.Data, gameID int) (result *result.Data)
+	FightAgainstTheKnight(dragonData *dragon.Data, gameID int) (resultData *result.Data)
 }

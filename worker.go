@@ -7,7 +7,7 @@ import (
 
 func worker(handler *handlers.GameHandler, jobs <-chan int, results chan<- *game.Data) {
 	for _ = range jobs {
-		game := playGame(*handler)
+		game := playGame(handler)
 		results <- game
 	}
 }
