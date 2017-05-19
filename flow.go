@@ -7,27 +7,27 @@ import (
 )
 
 //playGame inits game flow
-func playGame(handler *handlers.GameHandler) *game.Data {
+func playGame(handler handlers.GameHandler) *game.Data {
 	game := startGame(handler)
 	setWeather(handler, game)
 	addDragon(game)
 
-	game.Result = *(*handler).FightAgainstTheKnight(&game.Dragon, game.GameID)
+	game.Result = *(handler).FightAgainstTheKnight(&game.Dragon, game.GameID)
 	game.Result.Summarize()
 
 	return game
 }
 
 //startGame receives game from 3rd party
-func startGame(handler *handlers.GameHandler) *game.Data {
-	gameData := *(*handler).GetGame()
+func startGame(handler handlers.GameHandler) *game.Data {
+	gameData := *handler.GetGame()
 
 	return &gameData
 }
 
 //getWeather receives weather information from 3rd party
-func setWeather(handler *handlers.GameHandler, gameData *game.Data) {
-	weatherData := (*handler).GetWeather(gameData.GameID)
+func setWeather(handler handlers.GameHandler, gameData *game.Data) {
+	weatherData := handler.GetWeather(gameData.GameID)
 	weatherData.AddType()
 	gameData.Weather = *weatherData
 }
