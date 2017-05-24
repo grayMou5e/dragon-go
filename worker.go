@@ -7,7 +7,13 @@ import (
 
 func worker(handler *handlers.GameHandler, jobs <-chan int, results chan<- *game.Data) {
 	for _ = range jobs {
-		game := playGame(handler)
+		//generate corelation id !
+		game, gameError := playGame(handler)
+
+		if gameError != nil {
+			//log
+			continue
+		}
 		results <- game
 	}
 }

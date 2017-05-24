@@ -33,8 +33,8 @@ func main() {
 	close(results)
 	elapsed := time.Since(startTime)
 
-	fmt.Println(fmt.Sprintf("Won - %d Lost - %d", wins, amountOfGames-wins))
-	fmt.Printf("Time elapsed %s", elapsed)
+	fmt.Printf("\nWon - %d Lost - %d", wins, amountOfGames-wins)
+	fmt.Printf("\nTime elapsed %s\n", elapsed)
 }
 
 func getAmountOfGames() (amountOfGames int) {

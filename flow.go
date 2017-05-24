@@ -7,29 +7,50 @@ import (
 )
 
 //playGame inits game flow
-func playGame(handler *handlers.GameHandler) *game.Data {
-	game := startGame(handler)
-	setWeather(handler, game)
+func playGame(handler *handlers.GameHandler) (*game.Data, error) {
+	game, gameErr := startGame(handler)
+	if gameErr != nil {
+		return nil, gameErr
+	}
+
+	weatherErr := setWeather(handler, game)
+	if weatherErr != nil {
+		//log
+	}
+
 	addDragon(game)
 
-	game.Result = *(*handler).FightAgainstTheKnight(&game.Dragon, game.GameID)
+	gameResult, fightError := (*handler).FightAgainstTheKnight(&game.Dragon, game.GameID)
+	if fightError != nil {
+		return nil, fightError
+	}
+	game.Result = *gameResult
 	game.Result.Summarize()
 
-	return game
+	return game, nil
 }
 
 //startGame receives game from 3rd party
-func startGame(handler *handlers.GameHandler) *game.Data {
-	gameData := *(*handler).GetGame()
+func startGame(handler *handlers.GameHandler) (*game.Data, error) {
+	gameData, err := (*handler).GetGame()
+	if err != nil {
+		return nil, err
+	}
 
-	return &gameData
+	return gameData, nil
 }
 
 //getWeather receives weather information from 3rd party
-func setWeather(handler *handlers.GameHandler, gameData *game.Data) {
-	weatherData := (*handler).GetWeather(gameData.GameID)
+func setWeather(handler *handlers.GameHandler, gameData *game.Data) error {
+	weatherData, err := (*handler).GetWeather(gameData.GameID)
+	if err != nil {
+		return err
+	}
+
 	weatherData.AddType()
 	gameData.Weather = *weatherData
+
+	return nil
 }
 
 //addDragon generates dragon by using knight data & assigns it to game data

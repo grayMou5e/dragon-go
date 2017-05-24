@@ -15,16 +15,16 @@ import (
 type Handler struct {
 }
 
-func (h *Handler) GetGame() (gameData *game.Data) {
+func (h *Handler) GetGame() (gameData *game.Data, err error) {
 	gameData = &game.Data{GameID: 1, Knight: knight.Data{Agility: 8, Armor: 6, Attack: 5, Endurance: 1}}
-	return gameData
+	return gameData, nil
 }
-func (h *Handler) GetWeather(gameID int) (weatherData *weather.Data) {
-	return &weather.Data{Code: "nmr", Message: "The Weather Girls - It's not Raining Men"}
+func (h *Handler) GetWeather(gameID int) (weatherData *weather.Data, err error) {
+	return &weather.Data{Code: "nmr", Message: "The Weather Girls - It's not Raining Men"}, nil
 }
-func (h *Handler) FightAgainstTheKnight(dragonData *dragon.Data, gameID int) (resultData *result.Data) {
+func (h *Handler) FightAgainstTheKnight(dragonData *dragon.Data, gameID int) (resultData *result.Data, err error) {
 	resultData = &result.Data{Status: "Victory", Message: "yeah"}
-	return resultData
+	return resultData, nil
 }
 
 func Test_startGame(t *testing.T) {
@@ -33,7 +33,7 @@ func Test_startGame(t *testing.T) {
 	var handler handlers.GameHandler
 	handler = &handlerMock
 
-	gameData := startGame(&handler)
+	gameData, _ := startGame(&handler)
 
 	assert.Equal(1, gameData.GameID)
 }
@@ -44,7 +44,7 @@ func Test_GetWeather(t *testing.T) {
 	var handler handlers.GameHandler
 	handler = &handlerMock
 
-	expectedWeather := handler.GetWeather(1)
+	expectedWeather, _ := handler.GetWeather(1)
 	gameData := game.Data{GameID: 1}
 
 	setWeather(&handler, &gameData)
@@ -86,7 +86,7 @@ func Test_FightAgainstTheKnight(t *testing.T) {
 	var handler handlers.GameHandler
 	handler = &handlerMock
 
-	gameData := playGame(&handler)
+	gameData, _ := playGame(&handler)
 
 	assert.Equal(1, gameData.GameID)
 
