@@ -3,12 +3,17 @@ package main
 import (
 	"github.com/grayMou5e/dragon-go/game"
 	"github.com/grayMou5e/dragon-go/handlers"
+	uuid "github.com/nu7hatch/gouuid"
 )
 
 func worker(handler *handlers.GameHandler, jobs <-chan int, results chan<- *game.Data) {
 	for _ = range jobs {
 		//generate corelation id !
-		game, gameError := playGame(handler)
+		guid, guidGenErr := uuid.NewV4()
+		if guidGenErr != nil {
+			continue
+		}
+		game, gameError := playGame(handler, guid)
 
 		if gameError != nil {
 			//log

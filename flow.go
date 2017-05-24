@@ -4,21 +4,23 @@ import (
 	"github.com/grayMou5e/dragon-go/dragon"
 	"github.com/grayMou5e/dragon-go/game"
 	"github.com/grayMou5e/dragon-go/handlers"
+	"github.com/grayMou5e/dragon-go/result"
+	uuid "github.com/nu7hatch/gouuid"
 )
 
 //playGame inits game flow
-func playGame(handler *handlers.GameHandler) (*game.Data, error) {
-	game, gameErr := startGame(handler)
+func playGame(handler *handlers.GameHandler, correlationID *uuid.UUID) (*game.Data, error) {
+	game, gameErr := startGame(handler, correlationID)
 	if gameErr != nil {
 		return nil, gameErr
 	}
 
-	weatherErr := setWeather(handler, game)
+	weatherErr := setWeather(handler, game, correlationID)
 	if weatherErr != nil {
 		//log
 	}
 
-	addDragon(game)
+	addDragon(game, correlationID)
 
 	gameResult, fightError := (*handler).FightAgainstTheKnight(&game.Dragon, game.GameID)
 	if fightError != nil {
@@ -31,7 +33,7 @@ func playGame(handler *handlers.GameHandler) (*game.Data, error) {
 }
 
 //startGame receives game from 3rd party
-func startGame(handler *handlers.GameHandler) (*game.Data, error) {
+func startGame(handler *handlers.GameHandler, correlationID *uuid.UUID) (*game.Data, error) {
 	gameData, err := (*handler).GetGame()
 	if err != nil {
 		return nil, err
@@ -41,7 +43,7 @@ func startGame(handler *handlers.GameHandler) (*game.Data, error) {
 }
 
 //getWeather receives weather information from 3rd party
-func setWeather(handler *handlers.GameHandler, gameData *game.Data) error {
+func setWeather(handler *handlers.GameHandler, gameData *game.Data, correlationID *uuid.UUID) error {
 	weatherData, err := (*handler).GetWeather(gameData.GameID)
 	if err != nil {
 		return err
@@ -54,10 +56,17 @@ func setWeather(handler *handlers.GameHandler, gameData *game.Data) error {
 }
 
 //addDragon generates dragon by using knight data & assigns it to game data
-func addDragon(gameData *game.Data) {
+func addDragon(gameData *game.Data, correlationID *uuid.UUID) {
 	gameData.Dragon = *dragon.CreateDragon(gameData.Knight.Attack,
 		gameData.Knight.Armor,
 		gameData.Knight.Agility,
 		gameData.Knight.Endurance,
 		gameData.Weather.Type)
+}
+
+func fightAgainstTheKnight(handler *handlers.GameHandler, gameDragon *dragon.Data, gameID int, correlationID *uuid.UUID) (*result.Data, error) {
+
+	gameResult, fightError := (*handler).FightAgainstTheKnight(gameDragon, gameID)
+
+	return gameResult, fightError
 }

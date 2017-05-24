@@ -25,8 +25,9 @@ func Test_getAPIBodyBytes(t *testing.T) {
 
 	httpHandler := NewHandler()
 
-	bodyBytes := getAPIBodyBytes(server.URL, httpHandler)
+	bodyBytes, err := getAPIBodyBytes(server.URL, httpHandler)
 
+	assert.Nil(err)
 	assert.NotNil(bodyBytes, "Returned response body bytes shouldnt be nil")
 
 	assert.Equal(expectedResponse, string(bodyBytes), fmt.Sprintf("Expected [%s] but received [%s]", expectedResponse, bodyBytes))
@@ -47,8 +48,9 @@ func Test_GetGame(t *testing.T) {
 	handler := NewHandler()
 	handler.baseRestAPIURL = server.URL
 
-	game := handler.GetGame()
+	game, err := handler.GetGame()
 
+	assert.Nil(err)
 	assert.Equal(expectedGame.GameID, game.GameID)
 	assert.Equal(expectedGame.Knight, game.Knight)
 }
@@ -69,8 +71,9 @@ func Test_GetWeather(t *testing.T) {
 	handler := NewHandler()
 	handler.baseRestAPIURL = server.URL
 
-	weather := handler.GetWeather(gameID)
+	weather, err := handler.GetWeather(gameID)
 
+	assert.Nil(err)
 	assert.Equal(message, weather.Message)
 }
 
@@ -85,8 +88,9 @@ func Test_PrepareDragonForSending(t *testing.T) {
 			[]byte("{\"dragon\":{\"scaleThickness\":1,\"clawSharpness\":1,\"wingStrength\":1,\"fireBreath\":1}}")}}
 
 	for _, data := range dragonData {
-		body, _ := prepareDragonForSending(data.data)
+		body, err := prepareDragonForSending(data.data)
 
+		assert.Nil(err)
 		assert.Equal(string(data.expectedResult), string(body))
 	}
 }
@@ -107,8 +111,9 @@ func Test_FightAgainstTheKnight(t *testing.T) {
 	handler := NewHandler()
 	handler.baseRestAPIURL = server.URL
 
-	rez := handler.FightAgainstTheKnight(&dragonData, gameID)
+	rez, err := handler.FightAgainstTheKnight(&dragonData, gameID)
 
+	assert.Nil(err)
 	assert.Equal(status, rez.Status)
 	assert.Equal(message, rez.Message)
 }
@@ -127,7 +132,7 @@ func Test_FightAgainstTheKnight_Return500(t *testing.T) {
 	handler := NewHandler()
 	handler.baseRestAPIURL = server.URL
 
-	// rez := handler.FightAgainstTheKnight(&dragonData, gameID)
+	_, err := handler.FightAgainstTheKnight(&dragonData, gameID)
 
-	assert.Panics(func() { handler.FightAgainstTheKnight(&dragonData, gameID) }, "")
+	assert.Error(err)
 }
