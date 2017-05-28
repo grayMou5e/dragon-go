@@ -10,17 +10,17 @@ import (
 
 //playGame inits game flow
 func playGame(handler *handlers.GameHandler, correlationID *uuid.UUID) (*game.Data, error) {
-	game, gameErr := startGame(handler, correlationID)
+	game, gameErr := startGame(handler)
 	if gameErr != nil {
 		return nil, gameErr
 	}
 
-	weatherErr := setWeather(handler, game, correlationID)
+	weatherErr := setWeather(handler, game)
 	if weatherErr != nil {
 		//log
 	}
 
-	addDragon(game, correlationID)
+	addDragon(game)
 
 	gameResult, fightError := (*handler).FightAgainstTheKnight(&game.Dragon, game.GameID)
 	if fightError != nil {
@@ -33,7 +33,7 @@ func playGame(handler *handlers.GameHandler, correlationID *uuid.UUID) (*game.Da
 }
 
 //startGame receives game from 3rd party
-func startGame(handler *handlers.GameHandler, correlationID *uuid.UUID) (*game.Data, error) {
+func startGame(handler *handlers.GameHandler) (*game.Data, error) {
 	gameData, err := (*handler).GetGame()
 	if err != nil {
 		return nil, err
@@ -43,7 +43,7 @@ func startGame(handler *handlers.GameHandler, correlationID *uuid.UUID) (*game.D
 }
 
 //getWeather receives weather information from 3rd party
-func setWeather(handler *handlers.GameHandler, gameData *game.Data, correlationID *uuid.UUID) error {
+func setWeather(handler *handlers.GameHandler, gameData *game.Data) error {
 	weatherData, err := (*handler).GetWeather(gameData.GameID)
 	if err != nil {
 		return err
@@ -56,7 +56,7 @@ func setWeather(handler *handlers.GameHandler, gameData *game.Data, correlationI
 }
 
 //addDragon generates dragon by using knight data & assigns it to game data
-func addDragon(gameData *game.Data, correlationID *uuid.UUID) {
+func addDragon(gameData *game.Data) {
 	gameData.Dragon = *dragon.CreateDragon(gameData.Knight.Attack,
 		gameData.Knight.Armor,
 		gameData.Knight.Agility,
