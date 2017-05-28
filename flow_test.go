@@ -9,7 +9,6 @@ import (
 	"github.com/grayMou5e/dragon-go/knight"
 	"github.com/grayMou5e/dragon-go/result"
 	"github.com/grayMou5e/dragon-go/weather"
-	uuid "github.com/nu7hatch/gouuid"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -86,9 +85,8 @@ func Test_FightAgainstTheKnight(t *testing.T) {
 	handlerMock := Handler{}
 	var handler handlers.GameHandler
 	handler = &handlerMock
-	guid, _ := uuid.NewV4()
 
-	gameData, _ := playGame(&handler, guid)
+	gameData, _ := playGame(&handler)
 
 	assert.Equal(1, gameData.GameID)
 

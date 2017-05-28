@@ -4,17 +4,17 @@ import (
 	"github.com/grayMou5e/dragon-go/game"
 	"github.com/grayMou5e/dragon-go/handlers"
 	uuid "github.com/nu7hatch/gouuid"
+	"go.uber.org/zap"
 )
 
-func worker(handler *handlers.GameHandler, jobs <-chan int, results chan<- *game.Data) {
+func worker(handler *handlers.GameHandler, jobs <-chan int, results chan<- *game.Data, logger *zap.Logger) {
 	for _ = range jobs {
-		//generate corelation id !
 		guid, guidGenErr := uuid.NewV4()
 		if guidGenErr != nil {
 			continue
 		}
-		game, gameError := playGame(handler, guid)
-
+		// game, gameError := playGame(handler)
+		game, gameError := timedPlayGame(handler, logger, guid)
 		if gameError != nil {
 			//log
 			continue
@@ -23,9 +23,9 @@ func worker(handler *handlers.GameHandler, jobs <-chan int, results chan<- *game
 	}
 }
 
-func createWorkers(quantity int, handler *handlers.GameHandler, jobs <-chan int, results chan<- *game.Data) {
+func createWorkers(quantity int, handler *handlers.GameHandler, logger *zap.Logger, jobs <-chan int, results chan<- *game.Data) {
 	for w := 1; w <= quantity; w++ {
-		go worker(handler, jobs, results)
+		go worker(handler, jobs, results, logger)
 	}
 }
 

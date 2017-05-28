@@ -9,6 +9,7 @@ import (
 
 	"strconv"
 
+	"github.com/grayMou5e/dragon-go/config"
 	"github.com/grayMou5e/dragon-go/game"
 	"github.com/grayMou5e/dragon-go/handlers"
 )
@@ -23,7 +24,10 @@ func main() {
 	var hndlr handlers.GameHandler
 	hndlr = handler
 
-	createWorkers(100, &hndlr, jobs, results)
+	logger, _ := config.NewLogger()
+	defer logger.Sync()
+
+	createWorkers(100, &hndlr, logger, jobs, results)
 
 	startTime := time.Now()
 	queJobs(amountOfGames, jobs)
