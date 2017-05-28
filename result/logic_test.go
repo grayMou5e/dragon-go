@@ -15,6 +15,9 @@ func TestSummarize(t *testing.T) {
 		{Data{Status: "victory"}, true},
 		{Data{Status: "Victory"}, true},
 		{Data{Status: "VICTORY"}, true},
+		{Data{Status: "Lost"}, false},
+		{Data{Status: "Defeat"}, false},
+		{Data{Status: "GIBERISH"}, false},
 	}
 	for _, data := range testData {
 		data.data.Summarize()
